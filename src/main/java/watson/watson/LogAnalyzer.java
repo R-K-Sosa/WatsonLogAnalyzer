@@ -32,8 +32,22 @@ import com.ullink.slack.simpleslackapi.SlackSession;
 import com.ullink.slack.simpleslackapi.impl.SlackSessionFactory;
 import java.nio.file.*;
 public class LogAnalyzer {
+	
+	public static void main(String args[]) {
+		
+		LogAnalyzer logA = new LogAnalyzer();
+		
+		try {
+			
+			logA.test();
+			
+		} catch(Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		}
+	}
 
-	public static void main(String args[]) throws Exception
+	public void test() throws Exception
 	{
 		String IMID = "DB5JSKDLZ";
 		String rohanaID;
@@ -87,7 +101,7 @@ public class LogAnalyzer {
 		
 		//creates the stringBuffer by appending each line and adding line breaks
 		while ((logLine = in.readLine()) != null) {
-			response.append(logLine + " \n ");
+			response.append(logLine);
 		}
 		
 		in.close();
@@ -103,7 +117,8 @@ public class LogAnalyzer {
 		String responseString = response.toString();
 		
 		//puts quotes around commas in the log file
-		responseString = responseString.replaceAll("\"", "\"\"");
+// *****************		//Below is adding too many quotes       ******************** //
+		//responseString = responseString.replaceAll("\"", "\"\"");
 		
 		//the datepattern that appears in the log file
 		String datePattern = "\\[\\d{1,2}/\\d{1,2}/\\d{2}\\s+\\d{1,2}:\\d{2}:\\d{2}:\\d{3}\\sUTC\\]";
@@ -128,7 +143,7 @@ public class LogAnalyzer {
 		//.csv file creator
 		PrintWriter pw = null;
 		try {
-		    pw = new PrintWriter(new File("newerLogData.csv"));
+		    pw = new PrintWriter(new File("newestLogData.csv"));
 		} 
 		catch (FileNotFoundException e) {
 		    e.printStackTrace();
@@ -148,11 +163,16 @@ public class LogAnalyzer {
 		
 		//appends both lists to the csv file and formats it with commas and line breaks
 		for(int i = 0; i < dateAndTimes.size(); i++) {
-			builder.append('"' + dateAndTimes.get(i) + '"' + ",");
-			builder.append('"' + logEntryList.get(i) + '"' + " \n");
+			builder.append(dateAndTimes.get(i) + '|' + ",");
+			builder.append(logEntryList.get(i) + " \n");
+			System.out.println(i + " entries added");
 		}
+		
 		pw.write(builder.toString());
 		pw.close();
+		System.out.println("Done!");
+		
+		ReadNSearchFile.readRecord(ColumnNamesList, ColumnNamesList);
 		
 	}
 	
